@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <header>
+      <button class="settings-btn">&#9881;</button>
+    </header>
+    <!-- Wrapper for centering the content -->
+    <div class="wrapper">
+      <!-- Div for the timer function btns -->
+      <div class="functions-div">
+        <button class="btn start-timer-bnt">Start</button>
+        <span>&bull;</span>
+
+        <button class="btn pause-timer-btn">Pause</button>
+        <span>&bull;</span>
+
+        <button class="btn reset-timer-btn">Reset</button>
+      </div>
+
+      <!-- Div for the display -->
+      <div class="clock-div">
+        <span class="minutes-display">25</span>
+        <span>:</span>
+        <span class="seconds-display">00</span>
+      </div>
+
+      <!-- Pre defined timer -->
+      <div class="defined-timers">
+        <button class="btn defined-btn pomodoro-time">Pomodoro</button>
+        <span>&bull;</span>
+        <button class="btn defined-btn short-break-time">Short Break</button>
+        <span>&bull;</span>
+        <button class="btn defined-btn long-break-time">Long Break</button>
+      </div>
+    </div>
+  </body>
+  <script src="scripts.js"></script>
+</html>
