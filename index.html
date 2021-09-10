@@ -7,14 +7,14 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <header>
-      <button class="settings-btn">&#9881;</button>
+    <header class="settings-btn-wrapper">
+      <button class="settings-btn btn">&#9881;</button>
     </header>
     <!-- Wrapper for centering the content -->
     <div class="wrapper">
       <!-- Div for the timer function btns -->
       <div class="functions-div">
-        <button class="btn start-timer-bnt">Start</button>
+        <button class="btn start-timer-btn">Start</button>
         <span>&bull;</span>
 
         <button class="btn pause-timer-btn">Pause</button>
@@ -37,6 +37,97 @@
         <button class="btn defined-btn short-break-time">Short Break</button>
         <span>&bull;</span>
         <button class="btn defined-btn long-break-time">Long Break</button>
+      </div>
+    </div>
+
+    <!-- Settings window - hidden by default -->
+    <div class="settings-window hidden">
+      <div class="color-overlay"></div>
+      <div class="settings-wrapper">
+        <div class="close-btn-wrapper">
+          <h2>Options</h2>
+          <button class="close-btn btn">&#x2715;</button>
+        </div>
+        <form class="settings-form">
+          <fieldset class="user-preferences-configuration">
+            <legend>User Preferences</legend>
+            <input
+              type="checkbox"
+              id="title-indicator"
+              value=""
+              class="checkbox-input"
+            />
+            <label for="title-indicator">Timer indication in title?</label
+            ><br />
+
+            <input
+              type="checkbox"
+              id="show-notifications"
+              value=""
+              class="checkbox-input"
+            />
+            <label for="show-notifications">Browser notifications?</label><br />
+
+            <input
+              type="checkbox"
+              id="auto-start-timer"
+              value=""
+              class="checkbox-input"
+            />
+            <label for="auto-start-timer">Auto start pomodoro and breaks?</label
+            ><br />
+          </fieldset>
+          <fieldset class="sound-configuration">
+            <legend>Select Sound</legend>
+            <select id="sound-selector" class="list-select-input" size="4">
+              <option class="option-btn" value="sound-1" selected>
+                Sound 1
+              </option>
+              <option class="option-btn" value="sound-2">Sound 2</option>
+              <option class="option-btn" value="sound-3">Sound 3</option>
+              <option class="option-btn" value="sound-4">Sound 4</option>
+            </select>
+          </fieldset>
+          <fieldset id="time-configuration">
+            <legend>Set Custom Times <em>(in minutes)</em></legend>
+            <div class="text-item">
+              <label class="" for="pomodoro-time">Pomodoro</label>
+              <input
+                type="number"
+                id="pomodoro-time"
+                min="1"
+                value="25"
+                max="59"
+              />
+            </div>
+
+            <div class="text-item">
+              <label class="" for="short-break-time">Short Break</label>
+              <input
+                type="number"
+                id="short-break-time"
+                value="5"
+                min="1"
+                max="59"
+              />
+            </div>
+
+            <div class="text-item">
+              <label class="" for="long-break-time">Long Break</label>
+              <input
+                type="number"
+                value="10"
+                id="long-break-time"
+                min="1"
+                max="59"
+              />
+            </div>
+          </fieldset>
+          <div class="btn-wrapper">
+            <input type="submit" value="SAVE" />
+            <input type="reset" value="RESET" />
+          </div>
+        </form>
       </div>
     </div>
   </body>
