@@ -1,5 +1,4 @@
 "use strict"
-
 // ====ELEMENTS====
 // Main Screen
 const secsDisplay = document.querySelector(".seconds-display");
@@ -15,8 +14,20 @@ const settingsBtn = document.querySelector(".settings-btn");
 const settingsWindow = document.querySelector(".settings-window");
 const closeBtn = document.querySelector(".close-btn");
 
+// Settings Values
+let timerOnTitleValue = document.querySelector("#title-indicator");
+let browserNotificationsValue = document.querySelector("#show-notifications");  
+let autoStartPomodorosValue = document.querySelector("#auto-start-timer");
+let soundOptionsValue = document.querySelectorAll(".option-btn");
+let selectedOption = document.querySelector(".list-select-input").value;
+let pomodoroTime = document.querySelector("#pomodoro-time");
+let shortTime = document.querySelector("#short-break-time");
+let longTime = document.querySelector("#long-break-time");
+
+const saveBtn = document.querySelector(".save-btn");
+const resetBtn = document.querySelector(".reset-btn");
 // ===TIME DATA===
-let pomodoro = 0.5  ;
+let pomodoro = 25;
 let shortBreak = 5;
 let longBreak = 10;
 let MINUTE = 60;
@@ -24,6 +35,23 @@ let timeCountdown = pomodoro*MINUTE;
 let x;
 let timerLog = [];
 let counting = false;
+
+// ===Settings DATA===
+let isOnTitle = true;
+let isOnNotifications = true;
+let isOnAutoStart = true;
+let soundSelection = "sound-1";
+
+if (localStorage.length > 0) {
+  pomodoro = localStorage.pomodoro;
+  shortBreak = localStorage.shortBreak;
+  longBreak = localStorage.longBreak;
+  isOnTitle = localStorage.isOnTitle;
+  isOnNotifications = localStorage.isOnNotifications;
+  isOnAutoStart = localStorage.isOnAutoStart;
+  soundSelection = localStorage.soundSelection;
+}
+
 // ====INIT====
 if (Notification.permission === "default") {
   Notification.requestPermission();
@@ -91,6 +119,39 @@ const pauseTimer = () => {
   counting = false;
 };
 
+const UpdateSettingsValuesDisplay = () => {
+  timerOnTitleValue.checked = isOnTitle; 
+  browserNotificationsValue.checked = isOnNotifications;
+  selectedOption = soundSelection;
+  autoStartPomodorosValue.checked = isOnAutoStart;
+  pomodoroTime.textContent = pomodoro;
+  shortTime.textContent = shortBreak;
+  longTime.textContent = longBreak;
+};
+
+const applySettings = () => {
+  isOnTitle = timerOnTitleValue.checked;
+  isOnNotifications = browserNotificationsValue.checked;
+  isOnAutoStart = autoStartPomodorosValue.checked;
+  pomodoro = Number(pomodoroTime.value);
+  shortBreak = Number(shortTime.value);
+  longBreak = Number(longTime.value);
+  setSelection();
+  UpdateSettingsValuesDisplay();
+}
+
+const setSelection = () => {
+  for (let i = 0; i < soundOptionsValue.length; i++) {
+    if (soundOptionsValue[i].selected) {
+      soundSelection = soundOptionsValue[i].value;
+    };
+  };
+}
+
+const setLocalData = () => {
+
+};
+
 // ====EVENT LISTENERS====
 settingsBtn.addEventListener("click", () => {
   settingsWindow.classList.remove("hidden");
@@ -103,7 +164,7 @@ startTimerBtn.addEventListener("click",() => {
 
 pauseTimerBtn.addEventListener("click", pauseTimer);
 
-resetTimerBtn.addEventListener("click", () => {debugger; resetTimer(pomodoro)})
+resetTimerBtn.addEventListener("click", () => {resetTimer(pomodoro)})
 
 pomodoroBtn.addEventListener("click", () => {
   resetTimer(pomodoro);
@@ -122,9 +183,15 @@ longBreakBtn.addEventListener("click", () => {
 
 closeBtn.addEventListener("click", () => {
   settingsWindow.classList.toggle("hidden");
+
 })
 
-// I have to:
-// Set the notification tracking system
-// Set the custom notification
-// Make the settings work
+saveBtn.addEventListener("click", applySettings);
+
+// Things I got to do:
+
+// Setlocaldata
+//  menu timer function
+// notifications work
+// song work
+//  improve animations
