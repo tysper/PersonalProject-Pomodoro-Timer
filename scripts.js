@@ -19,7 +19,7 @@ let timerOnTitleValue = document.querySelector("#title-indicator");
 let browserNotificationsValue = document.querySelector("#show-notifications");  
 let autoStartPomodorosValue = document.querySelector("#auto-start-timer");
 let soundOptionsValue = document.querySelectorAll(".option-btn");
-let selectedOption = document.querySelector(".list-select-input").value;
+let selectedOption = document.querySelector(".list-select-input");
 let pomodoroTime = document.querySelector("#pomodoro-time");
 let shortTime = document.querySelector("#short-break-time");
 let longTime = document.querySelector("#long-break-time");
@@ -41,16 +41,18 @@ let isOnTitle = true;
 let isOnNotifications = true;
 let isOnAutoStart = true;
 let soundSelection = "sound-1";
+let cookieObj = {};
 
-if (localStorage.length > 0) {
-  pomodoro = localStorage.pomodoro;
-  shortBreak = localStorage.shortBreak;
-  longBreak = localStorage.longBreak;
-  isOnTitle = localStorage.isOnTitle;
-  isOnNotifications = localStorage.isOnNotifications;
-  isOnAutoStart = localStorage.isOnAutoStart;
-  soundSelection = localStorage.soundSelection;
+const cookies = document.cookie.split(";").map(x => x.trim());
+cookies.forEach((x) => {
+  const data = x.split("=");
+  cookieObj[`${data[0]}`] = data[1]
+});
+
+if (document.cookie.length > 0) {
+  getCookiesData();
 }
+
 
 // ====INIT====
 if (Notification.permission === "default") {
@@ -68,21 +70,42 @@ const displayTimerNotification = (message) => {
 };
 
 // ====FUNCTIONALITY====
-const line = newValue => {
+
+// DATA MANAGMENT
+function line(newValue) {
   if (timerLog.length > 0) {
     timerLog.pop();
   }
   timerLog.push(newValue);
 };
 
-const displayMinSec = secs => {
+function getCookiesData() {
+  pomodoro = Number(cookieObj.pomodoro);
+  shortBreak = Number(cookieObj.shortBreak);
+  longBreak = Number(cookieObj.longBreak);
+  isOnTitle = cookieObj.isOnTitle === "true";
+  isOnNotifications = cookieObj.isOnNotifications === "true";
+  isOnAutoStart = cookieObj.isOnAutoStart === "true";
+  soundSelection = cookieObj.soundSelection;
+  // console.log(isOnTitle);
+  // console.log(isOnNotifications);
+  // console.log(soundSelection);
+  // console.log(isOnAutoStart);
+  // console.log(pomodoro);
+  // console.log(shortBreak);
+  // console.log(longBreak);
+  UpdateSettingsValuesDisplay();
+};
+
+// TIMER ITSELF
+function displayMinSec(secs) {
   const inMin = Math.floor(secs/60).toString().padStart(2, "0");
   const inSecs = (secs%60).toString().padStart(2, "0");
   minsDisplay.textContent = inMin;
   secsDisplay.textContent = inSecs;
 };
 
-const startTimer = (time) => {
+function startTimer(time) {
   if (!counting) {
 
     let timeInSecs = time*60;
@@ -107,29 +130,32 @@ const startTimer = (time) => {
   }
 }
 
-const resetTimer = (time) => {
+// BTNS FUNCTIONS
+function resetTimer(time) {
   timerLog = [];
   clearInterval(x);
   displayMinSec(time*60);
   counting = false;  
 };
 
-const pauseTimer = () => {
+function pauseTimer() {
   clearInterval(x);
   counting = false;
 };
 
-const UpdateSettingsValuesDisplay = () => {
+// Update settings display
+function UpdateSettingsValuesDisplay() {
   timerOnTitleValue.checked = isOnTitle; 
   browserNotificationsValue.checked = isOnNotifications;
-  selectedOption = soundSelection;
+  selectedOption.value = soundSelection;
   autoStartPomodorosValue.checked = isOnAutoStart;
-  pomodoroTime.textContent = pomodoro;
-  shortTime.textContent = shortBreak;
-  longTime.textContent = longBreak;
+  pomodoroTime.value = pomodoro.toString();
+  shortTime.value = shortBreak.toString();
+  longTime.value = longBreak.toString();
 };
 
-const applySettings = () => {
+// Gets settings from settings form
+function applySettings() {
   isOnTitle = timerOnTitleValue.checked;
   isOnNotifications = browserNotificationsValue.checked;
   isOnAutoStart = autoStartPomodorosValue.checked;
@@ -138,9 +164,12 @@ const applySettings = () => {
   longBreak = Number(longTime.value);
   setSelection();
   UpdateSettingsValuesDisplay();
+  setLocalData();
+  displayMinSec(pomodoro*60);
 }
 
-const setSelection = () => {
+// Gets sound selection
+function setSelection() {
   for (let i = 0; i < soundOptionsValue.length; i++) {
     if (soundOptionsValue[i].selected) {
       soundSelection = soundOptionsValue[i].value;
@@ -148,9 +177,17 @@ const setSelection = () => {
   };
 }
 
-const setLocalData = () => {
-
+// Sets the data for the user
+function setLocalData() {
+  document.cookie = `pomodoro=${pomodoro}`;
+  document.cookie = `shortBreak=${shortBreak}`;
+  document.cookie = `longBreak=${longBreak}`;
+  document.cookie = `isOnTitle=${isOnTitle}`;
+  document.cookie = `isOnNotifications=${isOnNotifications}`;
+  document.cookie = `isOnAutoStart=${isOnAutoStart}`;
+  document.cookie = `soundSelection=${soundSelection}`;
 };
+
 
 // ====EVENT LISTENERS====
 settingsBtn.addEventListener("click", () => {
@@ -188,10 +225,4 @@ closeBtn.addEventListener("click", () => {
 
 saveBtn.addEventListener("click", applySettings);
 
-// Things I got to do:
-
-// Setlocaldata
-//  menu timer function
-// notifications work
-// song work
-//  improve animations
+displayMinSec(pomodoro*60);
