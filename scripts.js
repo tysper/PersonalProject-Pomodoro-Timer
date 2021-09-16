@@ -9,6 +9,7 @@ const resetTimerBtn = document.querySelector(".reset-timer-btn");
 const pomodoroBtn = document.querySelector(".pomodoro-time"); 
 const shortBreakBtn = document.querySelector(".short-break-time"); 
 const longBreakBtn = document.querySelector(".long-break-time");
+const titleTimer = document.querySelector(".timer-on-title");
 // Settings
 const settingsBtn = document.querySelector(".settings-btn");
 const settingsWindow = document.querySelector(".settings-window");
@@ -103,6 +104,7 @@ function displayMinSec(secs) {
   const inSecs = (secs%60).toString().padStart(2, "0");
   minsDisplay.textContent = inMin;
   secsDisplay.textContent = inSecs;
+  return [inMin, inSecs];
 };
 
 function startTimer(time) {
@@ -117,12 +119,17 @@ function startTimer(time) {
     timeInSecs--;
     
     x = setInterval(() => {
-      displayMinSec(timeInSecs);
+      const time = displayMinSec(timeInSecs);
       line(timeInSecs);
       timeInSecs--;
+      if (isOnTitle) {
+        titleTimer.textContent = `Pomodoro Timer | ${time[0]}:${time[1]}`;
+      } else {
+        titleTimer.textContent = "Pomodoro Timer";
+      };
       if (timeInSecs === -1) {
         clearInterval(x);
-
+        
       }
     }, 1000)
   } else {
@@ -165,7 +172,9 @@ function applySettings() {
   setSelection();
   UpdateSettingsValuesDisplay();
   setLocalData();
-  displayMinSec(pomodoro*60);
+  if (!counting) {
+    displayMinSec(pomodoro*60);
+  }
 }
 
 // Gets sound selection
@@ -226,3 +235,9 @@ closeBtn.addEventListener("click", () => {
 saveBtn.addEventListener("click", applySettings);
 
 displayMinSec(pomodoro*60);
+
+// Notifications
+// Auto pomodoro
+// Sound
+
+const notif = new Notification("Your time is up!", {body: "Time to study!", icon: "./images/wall-clock.png", actions: ["OK", "Start Break"]});
