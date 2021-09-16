@@ -38,11 +38,17 @@ let timerLog = [];
 let counting = false;
 
 // ===Settings DATA===
-let isOnTitle = true;
-let isOnNotifications = true;
-let isOnAutoStart = true;
+let isOnTitle = false;
+let isOnNotifications = false;
+let isOnAutoStart = false;
 let soundSelection = "sound-1";
 let cookieObj = {};
+let tones = {
+  "sound-1": new Audio("audio/sound-1.mp3"),
+  "sound-2": new Audio("audio/sound-2.mp3"),
+  "sound-3": new Audio("audio/sound-3.mp3"),
+  "sound-4": new Audio("audio/sound-4.mp3"),
+}
 
 const cookies = document.cookie.split(";").map(x => x.trim());
 cookies.forEach((x) => {
@@ -61,9 +67,10 @@ if (Notification.permission === "default") {
 };
 
 const displayTimerNotification = (message) => {
-  const icon = "";
+  const icon = "./images/wall-clock.png";
   const body = `Time to ${message}`;
-  const notification = new Notification("The time is up!", {body, icon});
+  const notification = new Notification("Your time is up!", {body: body, icon: icon});
+  tones[`${soundSelection}`].play();
   notification.addEventListener("click", () => {
     notification.close();
     window.parent.focus();
@@ -73,11 +80,11 @@ const displayTimerNotification = (message) => {
 // ====FUNCTIONALITY====
 
 // DATA MANAGMENT
-function line(newValue) {
+function line(newValue, arr) {
   if (timerLog.length > 0) {
-    timerLog.pop();
+    arr.pop();
   }
-  timerLog.push(newValue);
+  arr.push(newValue);
 };
 
 function getCookiesData() {
@@ -115,21 +122,27 @@ function startTimer(time) {
       timeInSecs = timerLog[0];
     }
     displayMinSec(timeInSecs);
-    line(timeInSecs);
+    line(timeInSecs, timerLog);
     timeInSecs--;
     
     x = setInterval(() => {
       const time = displayMinSec(timeInSecs);
-      line(timeInSecs);
+      line(timeInSecs, timerLog);
       timeInSecs--;
       if (isOnTitle) {
         titleTimer.textContent = `Pomodoro Timer | ${time[0]}:${time[1]}`;
       } else {
         titleTimer.textContent = "Pomodoro Timer";
       };
-      if (timeInSecs === -1) {
+      if (timeInSecs <= -1) {
         clearInterval(x);
-        
+        if (isOnNotifications) {
+          displayTimerNotification("take a break");
+        }
+        counting = false;
+        if (isOnAutoStart) {
+          timeInSecs = 300; // implement autostart
+        }
       }
     }, 1000)
   } else {
@@ -166,15 +179,19 @@ function applySettings() {
   isOnTitle = timerOnTitleValue.checked;
   isOnNotifications = browserNotificationsValue.checked;
   isOnAutoStart = autoStartPomodorosValue.checked;
-  pomodoro = Number(pomodoroTime.value);
-  shortBreak = Number(shortTime.value);
-  longBreak = Number(longTime.value);
+  pomodoro = Math.trunc(Number(pomodoroTime.value));
+  shortBreak = Math.trunc(Number(shortTime.value));
+  longBreak = Math.trunc(Number(longTime.value));
+  if (pomodoro < 1 || pomodoro > 59) pomodoro = 1;
+  if (shortBreak < 1 || shortBreak > 59) shortBreak = 1;
+  if (longBreak < 1 || longBreak > 59) longBreak = 1;
   setSelection();
   UpdateSettingsValuesDisplay();
   setLocalData();
   if (!counting) {
     displayMinSec(pomodoro*60);
   }
+  settingsWindow.classList.toggle("hidden");
 }
 
 // Gets sound selection
@@ -238,6 +255,3 @@ displayMinSec(pomodoro*60);
 
 // Notifications
 // Auto pomodoro
-// Sound
-
-const notif = new Notification("Your time is up!", {body: "Time to study!", icon: "./images/wall-clock.png", actions: ["OK", "Start Break"]});
