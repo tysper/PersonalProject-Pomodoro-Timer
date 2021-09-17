@@ -24,9 +24,9 @@ let selectedOption = document.querySelector(".list-select-input");
 let pomodoroTime = document.querySelector("#pomodoro-time");
 let shortTime = document.querySelector("#short-break-time");
 let longTime = document.querySelector("#long-break-time");
-
 const saveBtn = document.querySelector(".save-btn");
 const resetBtn = document.querySelector(".reset-btn");
+const colorOverlay = document.querySelector(".color-overlay");
 // ===TIME DATA===
 let pomodoro = 25;
 let shortBreak = 5;
@@ -36,7 +36,13 @@ let timeCountdown = pomodoro*MINUTE;
 let x;
 let timerLog = [];
 let counting = false;
-
+let currentTimer = 1;
+const timerOrder = ["pomodoro", "short-break", "pomodoro", "short-break", "pomodoro", "short-break", "pomodoro", "long-break"];
+let timerValues = {
+  "pomodoro": pomodoro,
+  "long-break": longBreak,
+  "short-break": shortBreak
+}
 // ===Settings DATA===
 let isOnTitle = false;
 let isOnNotifications = false;
@@ -49,7 +55,15 @@ let tones = {
   "sound-3": new Audio("audio/sound-3.mp3"),
   "sound-4": new Audio("audio/sound-4.mp3"),
 }
-
+let currentCountdown = "pomodoro";
+// UPDATE VALUES
+const updateTimerValues = function() {
+  timerValues = {
+    "pomodoro": pomodoro,
+    "long-break": longBreak,
+    "short-break": shortBreak
+  }
+}
 const cookies = document.cookie.split(";").map(x => x.trim());
 cookies.forEach((x) => {
   const data = x.split("=");
@@ -67,14 +81,16 @@ if (Notification.permission === "default") {
 };
 
 const displayTimerNotification = (message) => {
-  const icon = "./images/wall-clock.png";
-  const body = `Time to ${message}`;
-  const notification = new Notification("Your time is up!", {body: body, icon: icon});
-  tones[`${soundSelection}`].play();
-  notification.addEventListener("click", () => {
-    notification.close();
-    window.parent.focus();
-  });
+  if(isOnNotifications) {
+    const icon = "./images/wall-clock.png";
+    const body = `${message}`;
+    const notification = new Notification("Your time is up!", {body: body, icon: icon});
+    tones[`${soundSelection}`].play();
+    notification.addEventListener("click", () => {
+      notification.close();
+      window.parent.focus();
+    });
+  }
 };
 
 // ====FUNCTIONALITY====
@@ -87,6 +103,7 @@ function line(newValue, arr) {
   arr.push(newValue);
 };
 
+// Get cookies local data
 function getCookiesData() {
   pomodoro = Number(cookieObj.pomodoro);
   shortBreak = Number(cookieObj.shortBreak);
@@ -95,13 +112,6 @@ function getCookiesData() {
   isOnNotifications = cookieObj.isOnNotifications === "true";
   isOnAutoStart = cookieObj.isOnAutoStart === "true";
   soundSelection = cookieObj.soundSelection;
-  // console.log(isOnTitle);
-  // console.log(isOnNotifications);
-  // console.log(soundSelection);
-  // console.log(isOnAutoStart);
-  // console.log(pomodoro);
-  // console.log(shortBreak);
-  // console.log(longBreak);
   UpdateSettingsValuesDisplay();
 };
 
@@ -116,7 +126,7 @@ function displayMinSec(secs) {
 
 function startTimer(time) {
   if (!counting) {
-
+    counting = true;
     let timeInSecs = time*60;
     if (timerLog.length > 0) {
       timeInSecs = timerLog[0];
@@ -129,29 +139,60 @@ function startTimer(time) {
       const time = displayMinSec(timeInSecs);
       line(timeInSecs, timerLog);
       timeInSecs--;
+
       if (isOnTitle) {
         titleTimer.textContent = `Pomodoro Timer | ${time[0]}:${time[1]}`;
       } else {
-        titleTimer.textContent = "Pomodoro Timer";
-      };
+        titleTimer.textContent = `Pomodoro Timer`;
+      }
       if (timeInSecs <= -1) {
         clearInterval(x);
-        if (isOnNotifications) {
-          displayTimerNotification("take a break");
-        }
-        counting = false;
         if (isOnAutoStart) {
-          timeInSecs = 300; // implement autostart
+          nextTimer(`${timerOrder[currentTimer]}`);  
+        } else {
+          updateTimerValues();
+          __resetTimer(timerValues[`${currentCountdown}`]);
+          displayTimerNotification("")
         }
       }
     }, 1000)
-  } else {
-    console.log("already started a timer")
   }
 }
 
+function nextTimer(nextTime) {
+  if (timerOrder.length-1 === currentTimer) {
+    currentTimer = 0;
+  } else {
+    currentTimer++;
+  }
+  switch(nextTime) {
+    case "pomodoro":
+      displayTimerNotification("Time to get your things done!");
+      __resetTimer(pomodoro);
+      startTimer(pomodoro);
+      break;
+    case "short-break":
+      displayTimerNotification("Time to rest..");
+      __resetTimer(shortBreak);
+      startTimer(shortBreak);
+      break;
+    case "long-break":
+      displayTimerNotification("Time to rest more..");
+      __resetTimer(longBreak);
+      startTimer(longBreak);
+      break;
+  } 
+};
 // BTNS FUNCTIONS
 function resetTimer(time) {
+  timerLog = [];
+  clearInterval(x);
+  displayMinSec(time*60);
+  counting = false;  
+  currentTimer = 0;
+};
+
+function __resetTimer(time) {
   timerLog = [];
   clearInterval(x);
   displayMinSec(time*60);
@@ -214,42 +255,59 @@ function setLocalData() {
   document.cookie = `soundSelection=${soundSelection}`;
 };
 
-
+function closeModalWindow() {
+  settingsWindow.classList.toggle("hidden");
+} 
 // ====EVENT LISTENERS====
 settingsBtn.addEventListener("click", () => {
-  settingsWindow.classList.remove("hidden");
+  closeModalWindow()
 });
 
 startTimerBtn.addEventListener("click",() => {
   startTimer(pomodoro);
-  counting = true;
 });
 
 pauseTimerBtn.addEventListener("click", pauseTimer);
 
-resetTimerBtn.addEventListener("click", () => {resetTimer(pomodoro)})
+resetTimerBtn.addEventListener("click", () => {
+  titleTimer.textContent = `Pomodoro Timer`;
+  resetTimer(timerValues[`${currentCountdown}`]);
+})
 
 pomodoroBtn.addEventListener("click", () => {
+  currentCountdown = "pomodoro";
   resetTimer(pomodoro);
   startTimer(pomodoro);
 })
 
 shortBreakBtn.addEventListener("click", () => {
+  currentCountdown = "short-break";
   resetTimer(shortBreak);
   startTimer(shortBreak);
 });
 
 longBreakBtn.addEventListener("click", () => {
+  currentCountdown = "long-break";
   resetTimer(longBreak);
   startTimer(longBreak);
 });
 
 closeBtn.addEventListener("click", () => {
-  settingsWindow.classList.toggle("hidden");
+  closeModalWindow()
 
 })
 
 saveBtn.addEventListener("click", applySettings);
+
+colorOverlay.addEventListener("click", () => {
+  closeModalWindow();
+});
+
+document.addEventListener("keydown", x => {
+  if (x.code === "Escape" && !settingsWindow.classList.contains("hidden")) {
+    closeModalWindow();
+  }
+})
 
 displayMinSec(pomodoro*60);
 
