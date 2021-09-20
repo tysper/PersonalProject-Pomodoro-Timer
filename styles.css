@@ -48,7 +48,7 @@ legend {
 .btn {
   padding: 10px 20px;
   border: none;
-  border-radius: 20px;
+  border-radius: 5px;
   background: transparent;
   cursor: pointer;
   font-size: 18px;
@@ -58,11 +58,6 @@ legend {
 .btn:hover {
   transform: scale(1.1);
   color: rgb(221, 221, 255);
-}
-
-.btn:active {
-  transform: scale(1);
-  color: white;
 }
 
 .settings-btn {
@@ -251,7 +246,7 @@ legend {
   }
 
   .defined-timers .btn {
-    margin: 0;
+    margin: 20px;
   }
 
   .defined-timers span {
