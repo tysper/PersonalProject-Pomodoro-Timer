@@ -309,4 +309,3 @@ document.addEventListener("keydown", x => {
   }
 })
 
-displayMinSec(pomodoro*60);
