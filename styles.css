@@ -194,6 +194,7 @@ legend {
   border-radius: 4px;
   text-align: center;
   transition: border-color 0.2s ease;
+  width: 100px;
 }
 
 #time-configuration .text-item input:focus {
