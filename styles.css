@@ -256,6 +256,11 @@ legend {
   .clock-div {
     width: 100%;
     font-size: 70px;
+    letter-spacing: 5px;
+  }
+
+  .time-display {
+    transition: content 0.5s ease;
   }
 
   .settings-wrapper {
