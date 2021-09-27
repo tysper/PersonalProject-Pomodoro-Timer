@@ -34,21 +34,22 @@ function displayTime(secs) {
 function startTimer(time) {
   if (!isCounting) {
 
+    countdownLog = nextOnLine(countdownLog, time);
     let countdown = time;
     let currentTime;
 
-    countdownLog = nextOnLine(countdownLog, time);
     isCounting = true;
-
+    
     if (timerLog.length > 0) {
       currentTime = timerLog[0];
     } else {
       currentTime = time;
     };
-
+    
     if (countdownLog.length > 0) {
       countdown = countdownLog[0];
     }
+    
 
     function updateCountdown(varName) {
       if (currentTime > -1) {
@@ -79,24 +80,43 @@ function stopTimer(timerName) {
 }
 
 function resetTimer(timerName) {
-  stopTimer(timerName)
   timerLog.pop();
-  displayTime(countdownLog);
+  stopTimer(timerName)
+  displayTime(countdownLog[0]);
 }
 
 // DOM
 const startBtn = document.querySelector(".start-timer-btn");
 const stopBtn = document.querySelector(".pause-timer-btn");
 const resetBtn = document.querySelector(".reset-timer-btn");
+const pomoBtn = document.querySelector(".pomodoro-time");
+const shortBtn = document.querySelector(".short-break-time");
+const longBtn = document.querySelector(".long-break-time");
 
 startBtn.addEventListener("click", _ => {
   startTimer(pomodoro);
-  console.log("start")
 });
 stopBtn.addEventListener("click", _ => {
   stopTimer(timer);
-  console.log("stop");
 });
 resetBtn.addEventListener("click", _ => {
   resetTimer(timer);
+});
+
+pomoBtn.addEventListener("click", _ => {
+  countdownLog = nextOnLine(countdownLog, pomodoro);
+  resetTimer(timer);
+  startTimer(pomodoro);
+});
+
+shortBtn.addEventListener("click", _ => {
+  countdownLog = nextOnLine(countdownLog, pomodoro);
+  resetTimer(timer);
+  startTimer(shortBreak);
+});
+
+longBtn.addEventListener("click", _ => {
+  countdownLog = nextOnLine(countdownLog, pomodoro);
+  resetTimer(timer);
+  startTimer(longBreak);
 });
