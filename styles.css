@@ -31,7 +31,7 @@ header {
 
 /* ====FIELDSET INSIDE SETTINGS==== */
 fieldset {
-  padding: 10px 10px;
+  padding: 10px 0;
   /* border: 1px solid rgb(85, 85, 85); */
   border: none;
   border-radius: 5px;
@@ -120,14 +120,14 @@ legend {
 .settings-wrapper {
   background-color: white;
   width: 400px;
-  height: 80%;
   border-radius: 5px;
   z-index: 1;
-  padding: 20px 30px;
+  padding: 16px 32px;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
   align-items: center;
+  transform: scale(1.2);
 }
 
 /* ====CLOSE BUTTON WRAPPER==== */
@@ -159,8 +159,15 @@ legend {
 
 /* ====USER PREFERENCES==== */
 .user-preferences-configuration input {
-  margin-bottom: 15px;
+  /* margin-bottom: 15px; */
   font-size: 16px;
+  padding: 10px 0;
+}
+
+.user-preferences-configuration {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
 }
 /* ====SELECT SOUND FIELDSET==== */
 .list-select-input {
@@ -179,6 +186,8 @@ legend {
   display: flex;
   justify-content: space-evenly;
   align-items: center;
+  width: 100%;
+  padding: 10px 0;
 }
 
 #time-configuration .text-item {
@@ -237,26 +246,17 @@ legend {
   }
 
   .btn {
-    font-size: 20px;
+    font-size: 15px;
+    padding: 10px;
+    margin: 0;
   }
 
-  .defined-timers {
-    display: flex;
-    justify-content: center;
-    flex-direction: column;
-  }
-
-  .defined-timers .btn {
-    margin: 20px;
-  }
-
-  .defined-timers span {
-    display: none;
-  }
   .clock-div {
     width: 100%;
-    font-size: 70px;
+    font-size: 100px;
+    height: 1.5em;
     letter-spacing: 5px;
+    border-radius: 3px;
   }
 
   .time-display {
@@ -264,7 +264,6 @@ legend {
   }
 
   .settings-wrapper {
-    width: 100%;
-    height: 100%;
+    padding: 10px;
   }
 }
