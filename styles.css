@@ -239,7 +239,8 @@ legend {
 
 @media (max-width: 500px) {
   .wrapper {
-    width: 100%;
+    width: 100vw;
+    height: 100vh;
     justify-content: center;
     gap: 20px;
   }
@@ -257,6 +258,7 @@ legend {
     height: 1.5em;
     letter-spacing: 5px;
     border-radius: 3px;
+    margin: 15px 0;
   }
 
   .time-display {
